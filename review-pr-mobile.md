@@ -1,20 +1,19 @@
 ---
-name: review-pr-web
-description: 웹 프로젝트 PR 리뷰. React, Next.js, TypeScript 코드의 품질, 성능, 접근성을 검토합니다.
+name: review-pr-mobile
+description: 모바일 프로젝트 PR 리뷰. React Native, Expo 코드의 품질, 성능, 애니메이션을 검토합니다.
 argument-hint: <pr-number>
 disable-model-invocation: true
 allowed-tools: Bash(gh *), Read, Grep, Glob, WebFetch
 ---
 
-# Web PR Review
+# Mobile PR Review
 
-React/Next.js 웹 프로젝트 PR을 리뷰합니다.
+React Native/Expo 모바일 프로젝트 PR을 리뷰합니다.
 
 ## 적용 가이드라인
 
-1. **vercel-react-best-practices** - React/Next.js 성능 최적화
+1. **vercel-react-native-skills** - React Native 성능 최적화
 2. **vercel-composition-patterns** - 컴포넌트 합성 패턴
-3. **web-design-guidelines** - UI/UX 및 접근성
 
 ## 리뷰 절차
 
@@ -27,49 +26,77 @@ gh pr diff $ARGUMENTS
 
 ### Step 2: 가이드라인별 검토
 
-#### Performance (vercel-react-best-practices)
+#### Animation & Performance (vercel-react-native-skills)
 
 | 우선순위 | 규칙 | 체크 항목 |
 |----------|------|-----------|
-| CRITICAL | async-parallel | Promise.all()로 병렬 처리 |
-| CRITICAL | bundle-barrel-imports | barrel file 대신 직접 import |
-| CRITICAL | bundle-dynamic-imports | next/dynamic 코드 스플리팅 |
-| HIGH | server-parallel-fetching | 서버 컴포넌트 병렬 fetch |
-| MEDIUM | rerender-derived-state-no-effect | useEffect에서 파생상태 금지 |
-| MEDIUM | rerender-memo | 불필요한 리렌더링 방지 |
-| MEDIUM | rendering-conditional-render | && 대신 삼항연산자 |
+| HIGH | animation-gpu-properties | transform/opacity만 애니메이션 |
+| HIGH | animation-derived-value | useDerivedValue 활용 |
+| HIGH | animation-gesture-detector-press | GestureDetector로 press 처리 |
+| MEDIUM | react-compiler-reanimated-shared-values | shared value 최적화 |
+
+#### List Performance (vercel-react-native-skills)
+
+| 우선순위 | 규칙 | 체크 항목 |
+|----------|------|-----------|
+| CRITICAL | list-performance-virtualize | FlatList/FlashList 사용 |
+| HIGH | list-performance-item-memo | 리스트 아이템 memo |
+| HIGH | list-performance-callbacks | useCallback으로 콜백 안정화 |
+| MEDIUM | list-performance-inline-objects | 인라인 객체/배열 금지 |
+| MEDIUM | list-performance-images | 이미지 최적화 |
+
+#### UI Components (vercel-react-native-skills)
+
+| 우선순위 | 규칙 | 체크 항목 |
+|----------|------|-----------|
+| HIGH | ui-pressable | Pressable 컴포넌트 사용 |
+| HIGH | ui-expo-image | expo-image 사용 |
+| MEDIUM | ui-native-modals | 네이티브 모달 활용 |
+| MEDIUM | ui-safe-area-scroll | SafeArea + ScrollView |
+| LOW | ui-menus | 네이티브 메뉴 활용 |
+
+#### State Management (vercel-react-native-skills)
+
+| 우선순위 | 규칙 | 체크 항목 |
+|----------|------|-----------|
+| HIGH | state-ground-truth | 단일 진실 공급원 |
+| MEDIUM | react-state-minimize | 최소한의 state |
+| MEDIUM | react-state-fallback | 적절한 fallback |
+| MEDIUM | scroll-position-no-state | 스크롤 위치는 ref로 |
+
+#### Rendering (vercel-react-native-skills)
+
+| 우선순위 | 규칙 | 체크 항목 |
+|----------|------|-----------|
+| HIGH | rendering-no-falsy-and | && 대신 삼항연산자 (0/NaN 렌더링 방지) |
+| HIGH | rendering-text-in-text-component | 텍스트는 Text 컴포넌트 내부에 |
 
 #### Component Architecture (vercel-composition-patterns)
 
 | 우선순위 | 규칙 | 체크 항목 |
 |----------|------|-----------|
-| HIGH | architecture-avoid-boolean-props | boolean prop 3개 이상 시 variant 분리 |
+| HIGH | architecture-avoid-boolean-props | boolean prop 남용 금지 |
 | MEDIUM | architecture-compound-components | 복합 컴포넌트 패턴 |
-| MEDIUM | patterns-explicit-variants | 명시적 variant 컴포넌트 |
-| MEDIUM | patterns-children-over-render-props | renderX 대신 children |
+| MEDIUM | design-system-compound-components | 디자인 시스템 컴포넌트 |
 
-#### Accessibility (web-design-guidelines)
+#### Monorepo (vercel-react-native-skills)
 
 | 우선순위 | 규칙 | 체크 항목 |
 |----------|------|-----------|
-| HIGH | 키보드 접근성 | onClick 있으면 onKeyDown 필요 |
-| HIGH | 폼 라벨 | input에 label 또는 aria-label |
-| HIGH | 아이콘 버튼 | aria-label 필수 |
-| MEDIUM | 포커스 스타일 | focus-visible:ring-* |
-| MEDIUM | 호버 상태 | hover: 스타일 |
-| LOW | 모션 | prefers-reduced-motion 존중 |
+| HIGH | monorepo-native-deps-in-app | 네이티브 의존성은 app에 |
+| MEDIUM | monorepo-single-dependency-versions | 의존성 버전 통일 |
 
 ### Step 3: 코드 품질 검토
 
 - [ ] TypeScript 타입 정의
 - [ ] 함수/컴포넌트 선언 일관성
 - [ ] import 정리
-- [ ] 문법 오류 (세미콜론, 들여쓰기)
+- [ ] 문법 오류
 
 ### Step 4: 결과 출력
 
 ```markdown
-## PR #[번호] Web Review: [제목]
+## PR #[번호] Mobile Review: [제목]
 
 **Author**: @[작성자]
 **Branch**: [head] → [base]
@@ -105,12 +132,11 @@ gh pr diff $ARGUMENTS
 
 | 등급 | 기준 |
 |------|------|
-| Must Fix | 버그, 보안, 빌드에러, 문법오류 |
-| Should Fix | 성능, 접근성, 안티패턴 |
+| Must Fix | 크래시, 메모리 릭, 빌드에러, 문법오류 |
+| Should Fix | 성능, 애니메이션 jank, 안티패턴 |
 | Nice to Have | 스타일, 가독성, 확장성 |
 
 ## 상세 규칙 참조
 
-- `.claude/skills/vercel-react-best-practices/rules/`
+- `.claude/skills/vercel-react-native-skills/rules/`
 - `.claude/skills/vercel-composition-patterns/rules/`
-- `.claude/skills/web-design-guidelines/`
